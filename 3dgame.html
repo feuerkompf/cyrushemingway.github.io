@@ -54,12 +54,12 @@
 					point.position = new BABYLON.Vector3(x, 0.1, z);
 					point.rotation.y = zrot;
 					point.physicsImpostor = new BABYLON.PhysicsImpostor(point, BABYLON.PhysicsImpostor.BoxImpostor, {
-mass: 0,
-restitution: 0.9
-}, scene);
-}
-
-drawPoint(0, 0, 0, scene);
+						mass: 0,
+						restitution: 0.9
+					}, scene);
+				}
+				
+					drawPoint(0, 0, 0, scene);
 
 				engine.runRenderLoop(scene.render.bind(scene));
 				window.addEventListener('resize', engine.resize.bind(engine));
