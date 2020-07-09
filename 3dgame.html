@@ -95,10 +95,10 @@
 
 				});
 
-				drawPoint(0, 0, 0, scene);
+				// drawPoint(0, 0, 0, scene);
 
-				engine.runRenderLoop(scene.render.bind(scene));
-				window.addEventListener('resize', engine.resize.bind(engine));
+				// engine.runRenderLoop(scene.render.bind(scene));
+				// window.addEventListener('resize', engine.resize.bind(engine));
 
 			}
 
@@ -123,10 +123,10 @@
 				}, scene);
 			}
 
-				// drawPoint(0, 0, 0, scene);
+			drawPoint(0, 0, 0, scene);
 
-				// engine.runRenderLoop(scene.render.bind(scene));
-				// window.addEventListener('resize', engine.resize.bind(engine));
+			engine.runRenderLoop(scene.render.bind(scene));
+			window.addEventListener('resize', engine.resize.bind(engine));
 		</script>
 		</head>
 		<body onload="start()">
