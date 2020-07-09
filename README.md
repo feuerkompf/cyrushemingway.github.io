@@ -1,2 +1,2 @@
 # feuerkompf.github.io
-mytest
+https://feuerkompf.github.io/3dgame.html
