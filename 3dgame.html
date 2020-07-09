@@ -29,11 +29,11 @@
 
 				var keys = {};
 				window.addEventListener('keydown', function(e) {
-				keys[e.key] = true;
+					keys[e.key] = true;
 				});
 
 				window.addEventListener('keyup', function(e) {
-				keys[e.key] = false;
+					keys[e.key] = false;
 				});
 
 				var scene = new BABYLON.Scene(engine);
@@ -52,9 +52,9 @@
 				playerSphere.position = new BABYLON.Vector3(0, 0, 0);
 
 				playerSphere.physicsImpostor = new BABYLON.PhysicsImpostor(playerSphere, BABYLON.PhysicsImpostor.SphereImpostor, {
-					playerSphere.position = new BABYLON.Vector3(xFn(0), 9, zFn(0));
-				mass: 1,
-				restitution: 0.9
+						playerSphere.position = new BABYLON.Vector3(xFn(0), 9, zFn(0));
+						mass: 1,
+						restitution: 0.9
 				}, scene);
 
 				var camera = new BABYLON.ArcRotateCamera("Camera", 0, (3 * Math.PI) / 8, 20, playerSphere, scene);
@@ -95,15 +95,10 @@
 
 				});
 
-				// drawPoint(0, 0, 0, scene);
-
-				// engine.runRenderLoop(scene.render.bind(scene));
-				// window.addEventListener('resize', engine.resize.bind(engine));
-
 			}
 
 			function lost(){
-				// window.location.reload();
+				window.location.reload();
 				alert("you lose!");
 			}
 
