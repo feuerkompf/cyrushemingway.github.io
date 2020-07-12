@@ -73,12 +73,18 @@
 
 				// var _xFn = function(t) {var fns = [function(t) {return (Math.pow((1-t),3)*0.025)+(3*t*Math.pow((1-t),2)*0.0025)+(3*Math.pow(t,2)*(1-t)*0.1575)+(Math.pow(t,3)*0.1375)},function(t) {return (Math.pow((1-t),3)*0.1375)+(3*t*Math.pow((1-t),2)*0.1175)+(3*Math.pow(t,2)*(1-t)*0.12)+(Math.pow(t,3)*0.7725)}];var i = Math.max(0,Math.min(1, Math.floor(t * 2)));return fns[i]((t - (i/2)) * 2);};
 				// var _yFn = function(t) {var fns = [function(t) {return (Math.pow((1-t),3)*0.2)+(3*t*Math.pow((1-t),2)*0.0028125)+(3*Math.pow(t,2)*(1-t)*0.1078125)+(Math.pow(t,3)*0.6303125)},function(t) {return (Math.pow((1-t),3)*0.6303125)+(3*t*Math.pow((1-t),2)*1.1528125)+(3*Math.pow(t,2)*(1-t)*0.3628125)+(Math.pow(t,3)*0.3253125)}];var i = Math.max(0,Math.min(1, Math.floor(t * 2)));return fns[i]((t - (i/2)) * 2);};
+			/* START CURVE DATA 
+			{"start":[33,81.125],"init":[88,4.125],"segments":[{"a":[285,6.125],"b":[334,79.125]},{"a":[299,328.125],"b":[299,328.125]},{"a":[103,389.125],"b":[58,336.125]},{"a":[14,155.125],"b":[33,81.125]}]}
+			   END CURVE DATA */
 
 				//===END TRACK CODE # 4 ===//
 				//===TRACK CODE Jump ===//
 
 				var _xFn = function(t) {var fns = [function(t) {return (Math.pow((1-t),3)*0.5975)+(3*t*Math.pow((1-t),2)*0.2225)+(3*Math.pow(t,2)*(1-t)*0.71)+(Math.pow(t,3)*0.715)},function(t) {return (Math.pow((1-t),3)*0.715)+(3*t*Math.pow((1-t),2)*0.72)+(3*Math.pow(t,2)*(1-t)*0.015)+(Math.pow(t,3)*0.3025)}];var i = Math.max(0,Math.min(1, Math.floor(t * 2)));return fns[i]((t - (i/2)) * 2);};
 				var _yFn = function(t) {var fns = [function(t) {return (Math.pow((1-t),3)*0.2453125)+(3*t*Math.pow((1-t),2)*0.1903125)+(3*Math.pow(t,2)*(1-t)*0.1978125)+(Math.pow(t,3)*0.7778125)},function(t) {return (Math.pow((1-t),3)*0.7778125)+(3*t*Math.pow((1-t),2)*1.3578125)+(3*Math.pow(t,2)*(1-t)*0.5453125)+(Math.pow(t,3)*0.2178125)}];var i = Math.max(0,Math.min(1, Math.floor(t * 2)));return fns[i]((t - (i/2)) * 2);};
+			/* START CURVE DATA 
+			{"start":[33,81.125],"init":[88,4.125],"segments":[{"a":[285,6.125],"b":[334,79.125]},{"a":[299,328.125],"b":[299,328.125]},{"a":[103,389.125],"b":[58,336.125]},{"a":[14,155.125],"b":[33,81.125]}]}
+			   END CURVE DATA */
 
 				//===END TRACK CODE Jump ===//
 
@@ -104,9 +110,52 @@
 
 				rampAt(xFn, zFn, 0.07, -Math.PI / 4, scene);
 
+				wallAt(xFn, zFn, 0.55, -6.1, scene);
+
+				wallAt(xFn, zFn, 0.45, -6.1, scene);
+
+				wallAt(xFn, zFn, 0.58, -6.1, scene);
+
+				wallAt(xFn, zFn, 0.95, -6.1, scene);
+
+				wallAt(xFn, zFn, 0.9, -6.1, scene);
+
+				wallAt(xFn, zFn, 0.85, -6.1, scene);
+
 				scene.registerAfterRender(function() {
 					var vel = playerSphere.physicsImpostor.getLinearVelocity();
 					playerSphere.physicsImpostor.setLinearVelocity(vel.scale(.98));
+
+				BABYLON.SceneLoader.ImportMesh(null, "resources/", "speed.obj", scene, function(meshes) {
+					var boostMesh = meshes[0], boosts = [];
+					boostMesh.material = new BABYLON.StandardMaterial("boostMaterial", scene);
+					boostMesh.material.diffuseColor = new BABYLON.Color3(1, 1, 0);
+					boostMesh.scaling = new BABYLON.Vector3(5, 5, 5);
+					boostMesh.setEnabled(false);
+					function boostAt(xFn, zFn, t) {
+						var newBoost = boostMesh.clone('boost');
+						newBoost.position = new BABYLON.Vector3(xFn(t), 3.2, zFn(t));
+						newBoost.rotation.y = -derivAngle(t, xFn, zFn);
+						newBoost.setEnabled(true);
+						boosts.push(newBoost);
+					}
+
+				// Place boosts here
+					boostAt(xFn, zFn, 0.05);
+
+					scene.registerAfterRender(function() {
+						boosts.forEach(function(boost, i){
+							if(boost.intersectsMesh(playerSphere)){
+								boost.dispose();
+								boosts.splice(i,1);
+								var vel = playerSphere.physicsImpostor.getLinearVelocity();
+								playerSphere.applyImpulse(vel.normalize().scale(100), playerSphere.getAbsolutePosition());
+							} else {
+								boost.rotation.y += 0.01
+							}
+						});
+					});
+				});
 
 					var forward = camera.getFrontPosition(1).subtract(camera.position);
 					forward.y = 0;
@@ -132,6 +181,9 @@
 					}
 
 					var currentT = tLookup(xFn, zFn, 500, playerSphere.position.x, playerSphere.position.z);
+
+					var angle = (derivAngle(currentT, xFn, zFn) - (Math.PI));
+					camera.alpha += (angle - camera.alpha) / 32;
 
 					if (currentT > 0.99) {
 						win();
@@ -205,6 +257,23 @@
 			ramp.rotation.y = -derivAngle(t, xFn, zFn);
 			}
 
+			function wallAt(xFn, zFn, t, offset, scene) {
+				var wall = BABYLON.MeshBuilder.CreateBox('wall', {
+					height: 8,
+					width: .25,
+					depth: 12
+				}, scene);
+				angle = -derivAngle(t, xFn, zFn);
+				wall.material = new BABYLON.StandardMaterial("wallMaterial", scene);
+				wall.material.diffuseColor = new BABYLON.Color3(1, 1, 0);
+				wall.physicsImpostor = new BABYLON.PhysicsImpostor(wall, BABYLON.PhysicsImpostor.BoxImpostor, {
+					mass: 0,
+					restitution: 0.9
+				}, scene);
+				wall.position = new BABYLON.Vector3(xFn(t) + (offset * Math.sin(angle)), 4, zFn(t) + (offset * Math.cos(angle)));
+				wall.rotation.y = angle + (Math.PI / 2);
+				return wall;
+			}
 
 				engine.runRenderLoop(scene.render.bind(scene));
 				window.addEventListener('resize', engine.resize.bind(engine));
@@ -218,7 +287,7 @@
 			function lost(){
 				window.location.reload();
 				alert("you lose!");
-			}w
+			}
 
 		</script>
 	</head>
